@@ -1,0 +1,58 @@
+Sorting validation and API safety
+---------------------------------
+Test A - valid sorting fields
+GET http://localhost:8080/api/employees/search-sort?sortBy=salary&direction=desc
+Expected: 200 OK
+Test B - invalid sorting fields
+GET http://localhost:8080/api/employees/search-sort?sortBy=unknownField&direction=desc
+Expected: 400 Bad Request
+
+API Parameter validation
+-----------------------
+Test A -  valid direction
+GET http://localhost:8080/api/employees/search-sort?sortBy=salary&direction=desc
+Expected: 200 OK
+Test B - Invalid direction
+GET http://localhost:8080/api/employees/search-sort?sortBy=salary&direction=wrong
+Expected: 400 Bad Request
+Test C - Missing direction
+GET http://localhost:8080/api/employees/search-sort?sortBy=salary
+Expected: 200 OK, sorted by salary ascending (default).
+
+Pagination combined with filtering
+----------------------------------
+GET http://localhost:8080/api/employees/search-page?department=IT&minSalary=50000&page=1&size=5&sortBy=salary&direction=desc
+GET http://localhost:8080/api/employees/search-page?department=IT&minSalary=50000&page=3&size=5&sortBy=salary&direction=desc
+check the page metadata like number, numberOfElements, totalElements, totalPages, offset, pagesize, first, last
+
+Pagination + sorting + DTO
+--------------------------
+GET http://localhost:8080/api/employees/search-page
+Expected: 200 OK, default page=0, default size = 5, default sorting field = id, default direction = asc, response have only 4 DTO fields
+
+Test GlobalExceptionHandler
+---------------------------
+Test A - invalid sorting field
+GET http://localhost:8080/api/employees/search-page?sortBy=unknownField
+Expected: 400 Bad Request
+{
+  "status": 400,
+  "message": "Invalid sorting field: unknownField"
+}
+
+Test B - invalid pagination size
+GET http://localhost:8080/api/employees/search-page?size=0
+Expected: 400 Bad Request
+{
+    "status": 400,
+    "message": "Page must be >= 0 and size must be between 1 and 100"
+}
+Test C - Employee not found
+GET http://localhost:8080/api/employees/999999
+Expected: 404 Not Found
+{
+    "status": 404,
+    "message": "Employee not found with ID: 999999"
+}
+
+
