@@ -166,5 +166,12 @@ public class EmployeeController {
 	            department, minSalary, maxSalary,
 	            page, size, sortBy, direction);
 	}
+	/**
+	 * Added to check 500 Internal Server Error
+	@GetMapping("/test-error")
+	public String testError() {
+	    throw new RuntimeException("Testing unexpected exception");
+	}
+	**/
 	
 }
