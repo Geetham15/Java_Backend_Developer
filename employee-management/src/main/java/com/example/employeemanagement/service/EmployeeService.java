@@ -5,7 +5,8 @@ import java.util.List;
 import java.util.Set;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -27,6 +28,7 @@ import com.example.employeemanagement.dto.EmployeeUpdateDTO;
 @Service
 public class EmployeeService {
 
+	private static final Logger logger = LoggerFactory.getLogger(EmployeeService.class);
 	private final EmployeeRepository employeeRepository;
 
 	// Constructor Injection
@@ -123,12 +125,23 @@ public class EmployeeService {
 	}
 
 	public Employee createEmployee(EmployeeCreateDTO dto) {
+		logger.info("Creating a new employee");
 		Employee employee = convertToEntity(dto);
-		return employeeRepository.save(employee);
+		Employee savedEmployee = employeeRepository.save(employee);
+		logger.info("Employee created successfully with ID: {}", savedEmployee.getId());
+		return savedEmployee;
 	}
 
 	public EmployeeDTO getEmployeeByIdDTO(Long id) {
+		
+		logger.trace("TRACE: Fetching employee");
+		logger.debug("DEBUG: Fetching employee");
+		logger.info("Fetching employee with ID : {}", id);
+		logger.info("INFO: Fetching employee");
+		logger.warn("WARN: Fetching employee");
+		logger.error("ERROR: Fetching employee");
 		Employee employee = getEmployeeById(id);
+		logger.info("Employee retrieved successfully with ID: {} ", id);
 		return convertToDTO(employee);
 	}
 
@@ -208,10 +221,12 @@ public class EmployeeService {
 
 		return employeeRepository.findAll(spec, sort).stream().map(this::convertToDTO).toList();
 	}
-	//Pagination combined with filtering
+
+	// Pagination combined with filtering
 	// JPASpecifications - dynamic filtering
 	// Pageable - pagination and sorting
-	//TEST GET /api/employees/search-page?department=IT&minSalary=50000&page=0&size=5&sortBy=salary&direction=desc
+	// TEST GET
+	// /api/employees/search-page?department=IT&minSalary=50000&page=0&size=5&sortBy=salary&direction=desc
 	public Page<EmployeeDTO> searchEmployeesWithPagination(String department, BigDecimal minSalary,
 			BigDecimal maxSalary, int page, int size, String sortBy, String direction) {
 
