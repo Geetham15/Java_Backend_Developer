@@ -1,7 +1,5 @@
 package com.example.java8.predicate;
 
-import java.math.BigDecimal;
-
 public class Employee {
 
 	private int id;
